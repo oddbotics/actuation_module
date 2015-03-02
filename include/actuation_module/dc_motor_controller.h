@@ -1,0 +1,81 @@
+/*
+ * DC motor controller class that will allow a controller to interface with a dc motor connected 
+ * to a Beaglebone Black
+ *
+ * By: Christopher Dunkers, cmdunkers@cmu.edu
+ * March 1, 2015
+ */
+#ifndef DC_MOTOR_CONTROLLER_H_
+#define DC_MOTOR_CONTROLLER_H_
+
+#include <ros/ros.h>
+#include "oddbot_msgs/DCMotorCommand.h"
+#include "oddbot_msgs/DCMotorFeedback.h"
+#include "sensor_msgs/JointState.h"
+#include "beaglebone_blacklib/BlackPWM.h"
+#include "beaglebone_blacklib/BlackGPIO.h"
+#include "beaglebone_eqep/eqep.h"
+#include <string>
+#include <cmath>
+
+class dc_motor_controller 
+{
+    public: 
+	virtual float update_motor(int deltaEncoder_ticks) = 0;
+	virtual void update_feedback() = 0;
+	double getTimeStepS(){return this->time_step_s;}
+	std::string getEqepPath(){return this->eqep_path;}
+	double getTimeoutTime(){return this->timeout_time_s;}
+	void setDesVelToZero(){this->des_vel_mps = 0.0;}
+	void setCurAmp(float value){this->cur_cur_amp = value;}
+	
+    protected:
+	//call back function for subscriber
+	void update_controller(const oddbot_msgs::DCMotorCommand::ConstPtr& msg) {
+		//update the timeout for time the message was received
+		ros::Time timeout_time_s = ros::Time::now() + ros::Duration(this->timeout_s);
+		if(fabs(msg->des_ctrl) > this->max_vel_mps){
+			this->des_vel_mps = this->max_vel_mps;
+		} else {
+			this->des_vel_mps = msg->des_ctrl;
+		}
+		this->des_ang_pos_rad = msg->des_ctrl;
+	}
+
+	//the control loop time interval
+	double time_step_s;
+	
+	// motor parameters
+	double wheel_radius_m;
+	int ticks_per_rev;
+	double max_vel_mps;		
+
+	//control variables
+	double timeout_s;
+	double timeout_time_s;
+
+	// desired control 
+	double des_vel_mps;
+	double des_ang_pos_rad;
+
+	// current control
+	double cur_vel_mps;
+	double cur_ang_vel_rps;
+	double cur_pos_m;
+	double cur_ang_pos_rad;
+	double cur_cur_amp;
+
+	//eQEP
+	std::string eqep_path;
+
+	//Subscribers and publishers
+	ros::Subscriber command_sub;
+	ros::Publisher feedback_pub,joint_pub;
+
+	//node name to use for joint state
+	std::string node_name;
+
+};
+
+#endif
+ 
