@@ -104,7 +104,7 @@ include_directories(
 
 ## Declare a cpp library
 add_library(actuation_module
-  src/${PROJECT_NAME}/PID_controller.cpp
+  src/${PROJECT_NAME}/PID.cpp
 )
 
 ## Declare a cpp executable

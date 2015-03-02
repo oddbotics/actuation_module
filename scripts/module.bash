@@ -13,4 +13,4 @@ awk '{
 	print "object_" subnet
 }')
 
-roslaunch motor_controller motor.launch position:=$address type:=dc_motor
+roslaunch motor_controller motor.launch position:=$address type:=dc_motor_vel
