@@ -1,3 +1,9 @@
+/*
+ * PID controller class
+ *
+ * By: Christopher Dunkers, cmdunkers@cmu.edu
+ * March 1, 2015
+ */
 
 #ifndef PID_HPP_
 #define PID_HPP_

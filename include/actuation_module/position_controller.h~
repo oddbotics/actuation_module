@@ -1,8 +1,16 @@
+/*
+ * DC motor controller using PC controlling angular position
+ * to a Beaglebone Black
+ *
+ * By: Christopher Dunkers, cmdunkers@cmu.edu
+ * March 1, 2015
+ */
+
 #ifndef POSITION_CONTROLLER_H_
 #define POSITION_CONTROLLER_H_
 
 #include "actuation_controller/dc_motor_controller.h"
-#include "motor_controller/PID.hpp"
+#include "actuation_controller/PID.hpp"
 #include <chrono>
 
 class position_controller : public dc_motor_controller

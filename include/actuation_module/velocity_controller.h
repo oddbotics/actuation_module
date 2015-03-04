@@ -1,3 +1,11 @@
+/*
+ * DC motor controller using PC controlling velocity 
+ *
+ * By: Christopher Dunkers, cmdunkers@cmu.edu
+ * March 1, 2015
+ */
+
+
 #ifndef VELOCITY_CONTROLLER_H_
 #define VELOCITY_CONTROLLER_H_
 

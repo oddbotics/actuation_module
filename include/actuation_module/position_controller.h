@@ -1,3 +1,10 @@
+/*
+ * DC motor controller using PC controlling angular position
+ *
+ * By: Christopher Dunkers, cmdunkers@cmu.edu
+ * March 1, 2015
+ */
+
 #ifndef POSITION_CONTROLLER_H_
 #define POSITION_CONTROLLER_H_
 
