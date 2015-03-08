@@ -8,14 +8,15 @@
 #ifndef POSITION_CONTROLLER_H_
 #define POSITION_CONTROLLER_H_
 
-#include "actuation_controller/dc_motor_controller.h"
-#include "actuation_controller/PID.hpp"
+#include "actuation_module/dc_motor_controller.h"
+#include "actuation_module/PID.hpp"
 #include <chrono>
 
 class position_controller : public dc_motor_controller
 {
 	public:
 		position_controller();
+		void getMotorCommand(float * setMotor);
 
 	private:
 		// PID Parameters for the specific motor

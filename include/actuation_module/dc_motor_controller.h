@@ -21,7 +21,7 @@
 class dc_motor_controller 
 {
     public: 
-	virtual getMotorCommand() = 0;	
+	virtual void getMotorCommand(float * setMotor){*setMotor = 0.0;}	
 	void update_motor(float * setMotor, int deltaEncoder_ticks);
 	void update_feedback();
 	double getTimeStepS(){return this->time_step_s;}

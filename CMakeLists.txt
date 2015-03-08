@@ -24,7 +24,7 @@ catkin_package()
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
+include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -34,23 +34,21 @@ add_library(actuation_module
 )
 
 ## Declare a cpp executable
-add_executable(velocity_controller src/velocity_controller.cpp)
-add_executable(position_controller src/position_controller.cpp)
+add_executable(beaglebone_dc_motor_controller src/beaglebone_dc_motor_controller.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(actuation_module_node actuation_module_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(actuation_module_node
+target_link_libraries(beaglebone_dc_motor_controller
   ${catkin_LIBRARIES}
   motor_controller_lib
   beaglebone_blacklib
   beaglebone_eqep
 )
 
-set_target_properties(controller PROPERTIES COMPILE_FLAGS -std=c++11)
-
+set_target_properties(beaglebone_dc_motor_controller PROPERTIES COMPILE_FLAGS -std=c++11)
 #############
 ## Install ##
 #############

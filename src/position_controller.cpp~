@@ -6,7 +6,7 @@
  * \date February 14, 2015
  */
 
-#include "actuation_controller/position_controller.h"
+#include "actuation_module/position_controller.h"
 
 /** 
  * the constructor for the class motor_controller
@@ -23,11 +23,7 @@ position_controller::position_controller() : dc_motor_controller(){
 	private_node_handle_.param<double>("max_output", max_output, 100.0);
 	
 	// initialize PID controller
-	pos_PID.setKp(kp);
-	pos_PID.setKi(ki);
-	pos_PID.setKd(kd);	
-	pos_PID.setMinOutput(min_output);
-	pos_PID.setMaxOutput(max_output);
+	pos_PID = PID(kp, ki, kd, min_output, max_output)
 }
 
 /**

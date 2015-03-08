@@ -6,7 +6,7 @@
  * \date February 14, 2015
  */
 
-#include "actuation_controller/position_controller.h"
+#include "actuation_module/position_controller.h"
 
 /** 
  * the constructor for the class motor_controller
@@ -31,7 +31,7 @@ position_controller::position_controller() : dc_motor_controller(){
  */
 position_controller::getMotorCommand(float * setMotor){
 	//calcuate output
-        setMotor* = this->pos_PID.getValue(this->cur_pos_m,this->des_pos_m,this->time_step_s); 
+        *setMotor = this->pos_PID.getValue(this->cur_pos_m,this->des_pos_m,this->time_step_s); 
 }
 
 
