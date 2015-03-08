@@ -16,9 +16,7 @@ class position_controller : public dc_motor_controller
 {
 	public:
 		position_controller();
-		float update_motor(int deltaEncoder_ticks);
-		void update_feedback();
-		
+
 	private:
 		// PID Parameters for the specific motor
 		double kp;

@@ -21,8 +21,9 @@
 class dc_motor_controller 
 {
     public: 
-	virtual float update_motor(int deltaEncoder_ticks) = 0;
-	virtual void update_feedback() = 0;
+	virtual getMotorCommand() = 0;	
+	void update_motor(float * setMotor, int deltaEncoder_ticks);
+	void update_feedback();
 	double getTimeStepS(){return this->time_step_s;}
 	std::string getEqepPath(){return this->eqep_path;}
 	double getTimeoutTime(){return this->timeout_time_s;}
@@ -31,16 +32,7 @@ class dc_motor_controller
 	
     protected:
 	//call back function for subscriber
-	void update_controller(const oddbot_msgs::DCMotorCommand::ConstPtr& msg) {
-		//update the timeout for time the message was received
-		ros::Time timeout_time_s = ros::Time::now() + ros::Duration(this->timeout_s);
-		if(fabs(msg->des_ctrl) > this->max_vel_mps){
-			this->des_vel_mps = this->max_vel_mps;
-		} else {
-			this->des_vel_mps = msg->des_ctrl;
-		}
-		this->des_ang_pos_rad = msg->des_ctrl;
-	}
+	void update_controller(const oddbot_msgs::DCMotorCommand::ConstPtr& msg);
 
 	//the control loop time interval
 	double time_step_s;
@@ -48,7 +40,8 @@ class dc_motor_controller
 	// motor parameters
 	double wheel_radius_m;
 	int ticks_per_rev;
-	double max_vel_mps;		
+	double max_vel_mps;	
+	double min_vel_mps;	
 
 	//control variables
 	double timeout_s;
@@ -74,7 +67,6 @@ class dc_motor_controller
 
 	//node name to use for joint state
 	std::string node_name;
-
 };
 
 #endif

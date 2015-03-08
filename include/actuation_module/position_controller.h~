@@ -1,6 +1,5 @@
 /*
  * DC motor controller using PC controlling angular position
- * to a Beaglebone Black
  *
  * By: Christopher Dunkers, cmdunkers@cmu.edu
  * March 1, 2015

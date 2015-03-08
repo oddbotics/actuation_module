@@ -5,7 +5,6 @@
  * March 1, 2015
  */
 
-
 #ifndef VELOCITY_CONTROLLER_H_
 #define VELOCITY_CONTROLLER_H_
 
@@ -17,9 +16,7 @@ class velocity_controller : public dc_motor_controller
 {
 	public:
 		velocity_controller();
-		float update_motor(int deltaEncoder_ticks);
-		void update_feedback();
-		
+
 	private:
 		// PID Parameters for the specific motor
 		double kp;
