@@ -86,7 +86,7 @@ void dc_motor_controller::update_controller(const oddbot_msgs::DCMotorCommand::C
 			this->des_vel_mps = this->max_vel_mps;
 		} else if(msg->des_ctrl < this->min_vel_mps){ 
 			this->des_vel_mps = this->min_vel_mps;
-		}else {
+		} else {
 			this->des_vel_mps = msg->des_ctrl;
 		}
 	} else if(this->mode == 0){

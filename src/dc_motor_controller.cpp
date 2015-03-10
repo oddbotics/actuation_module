@@ -81,15 +81,15 @@ void dc_motor_controller::update_controller(const oddbot_msgs::DCMotorCommand::C
 	//update the timeout for time the message was received
 	ros::Time timeout_time = ros::Time::now() + ros::Duration(this->timeout_s);
 	this->timeout_time_s = timeout_time.toSec();
-	if(this->mode == 1){
+	if(this->mode == 1){ //velocity control
 		if(msg->des_ctrl > this->max_vel_mps){
 			this->des_vel_mps = this->max_vel_mps;
 		} else if(msg->des_ctrl < this->min_vel_mps){ 
 			this->des_vel_mps = this->min_vel_mps;
-		}else {
+		} else {
 			this->des_vel_mps = msg->des_ctrl;
 		}
-	} else if(this->mode == 0){
+	} else if(this->mode == 0){ //position control
 		this->des_ang_pos_rad = msg->des_ctrl;
 	}
 }
