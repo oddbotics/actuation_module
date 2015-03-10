@@ -12,7 +12,7 @@
  * the constructor for the class motor_controller
  * it is used to initialize the ros node 
  */
-velocity_controller::velocity_controller() : dc_motor_controller(){
+velocity_controller::velocity_controller(){
 
 	//grab the parameters
 	ros::NodeHandle private_node_handle_("~");
@@ -23,16 +23,20 @@ velocity_controller::velocity_controller() : dc_motor_controller(){
 	private_node_handle_.param<double>("max_output", max_output, 100.0);
 	
 	// initialize PID controller
-	vel_PID = PID(kp, ki, kd, min_output, max_output)
-  
+	vel_PID = PID(kp, ki, kd, min_output, max_output);  
 }
 
 /**
  * A function to generate a value to set the motor
  */
-position_controller::getMotorCommand(float * setMotor){
+void velocity_controller::getMotorCommand(float * setMotor){
 	//calcuate output
-        setMotor* = this->vel_PID.getValue(this->cur_pos_m,this->des_pos_m,this->time_step_s); 
+	//turn off the motor if it has not received a command after the timeout period
+	if((ros::Time::now().toSec() - this->timeout_time_s) > 0){
+		this->setDesVelToZero();
+	} 
+
+        *setMotor = this->vel_PID.getValue(this->cur_pos_m,this->des_pos_m,this->time_step_s); 
 }
 
 

@@ -29,12 +29,16 @@ include_directories(include
 )
 
 ## Declare a cpp library
-add_library(actuation_module
+add_library(actuation_module_lib
   src/${PROJECT_NAME}/PID.cpp
 )
 
 ## Declare a cpp executable
-add_executable(beaglebone_dc_motor_controller src/beaglebone_dc_motor_controller.cpp)
+add_executable(beaglebone_dc_motor_controller src/beaglebone_dc_motor_controller.cpp
+	src/dc_motor_controller.cpp
+	src/position_controller.cpp
+	src/velocity_controller.cpp
+)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -43,7 +47,7 @@ add_executable(beaglebone_dc_motor_controller src/beaglebone_dc_motor_controller
 ## Specify libraries to link a library or executable target against
 target_link_libraries(beaglebone_dc_motor_controller
   ${catkin_LIBRARIES}
-  motor_controller_lib
+  actuation_module_lib
   beaglebone_blacklib
   beaglebone_eqep
 )

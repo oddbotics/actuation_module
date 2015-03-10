@@ -16,6 +16,7 @@ class position_controller : public dc_motor_controller
 {
 	public:
 		position_controller();
+//		virtual void getMotorCommand(float * setMotor);
 
 	private:
 		// PID Parameters for the specific motor

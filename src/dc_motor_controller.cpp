@@ -26,27 +26,29 @@ dc_motor_controller::dc_motor_controller(){
 	node_name = ros::this_node::getNamespace();
 	
 	joint_pub = nh.advertise<sensor_msgs::JointState>("/joint", 1000);
-	feedback_pub = nh.advertise<oddbot_msgs::ServoFeedback>("/feedback", 1000);
-	command_sub = nh.subscribe("/command", 1000, &motor_controller::update_controller, this);
+	feedback_pub = nh.advertise<oddbot_msgs::DCMotorFeedback>("/feedback", 1000);
+	command_sub = nh.subscribe("/command", 1000, &dc_motor_controller::update_controller, this);
 	
 	//intialize state of the controller
 	// desired control 
-	double des_ang_pos_rad = 0.0;
-	double des_vel_mps = 0.0;
+	des_ang_pos_rad = 0.0;
+	des_vel_mps = 0.0;
+
+	//initialize watch dog 
+	timeout_time_s = ros::Time::now().toSec();
 
 	// current control
-	double cur_vel_mps = 0.0;
-	double cur_ang_vel_rps = 0.0;
-	double cur_pos_m = 0.0;
-	double cur_ang_pos_rad = 0.0;
-	double cur_cur_amp = 0.0;
+	cur_vel_mps = 0.0;
+	cur_ang_vel_rps = 0.0;
+	cur_pos_m = 0.0;
+	cur_ang_pos_rad = 0.0;
+	cur_cur_amp = 0.0;
 }
 
 /**
  * A function to generate a value to set the motor
  */
-void motor_controller::update_motor(float * setMotor, int deltaEncoder_ticks){
-	
+void dc_motor_controller::update_motor(float * setMotor, int deltaEncoder_ticks){
 	static int prev_deltaEncoder_ticks = 0;	
 	
 	//check for the special condition
@@ -54,8 +56,6 @@ void motor_controller::update_motor(float * setMotor, int deltaEncoder_ticks){
 	{
 		deltaEncoder_ticks = 0;
 	}
-
-	float setMotor;
 
 	//calculate angular position
 	float deltaAngPosition_rad = (((float)deltaEncoder_ticks) / this->ticks_per_rev) * (2 * M_PI);
@@ -74,20 +74,24 @@ void motor_controller::update_motor(float * setMotor, int deltaEncoder_ticks){
 	this->cur_vel_mps = deltaPosition_m/this->time_step_s;    
 
         //calcuate output
-        this->pos_PID.getMotorCommand(setMotor);  
+        this->getMotorCommand(setMotor);  
 }
 
 void dc_motor_controller::update_controller(const oddbot_msgs::DCMotorCommand::ConstPtr& msg) {
 	//update the timeout for time the message was received
-	ros::Time timeout_time_s = ros::Time::now() + ros::Duration(this->timeout_s);
-	if(msg->des_ctrl > this->max_vel_mps){
-		this->des_vel_mps = this->max_vel_mps;
-	} else if(msg->des_ctrl < this->min_vel_mps){ 
-		this->des_vel_mps = this->min_vel_mps;
-	}else {
-		this->des_vel_mps = msg->des_ctrl;
+	ros::Time timeout_time = ros::Time::now() + ros::Duration(this->timeout_s);
+	this->timeout_time_s = timeout_time.toSec();
+	if(this->mode == 1){
+		if(msg->des_ctrl > this->max_vel_mps){
+			this->des_vel_mps = this->max_vel_mps;
+		} else if(msg->des_ctrl < this->min_vel_mps){ 
+			this->des_vel_mps = this->min_vel_mps;
+		}else {
+			this->des_vel_mps = msg->des_ctrl;
+		}
+	} else if(this->mode == 0){
+		this->des_ang_pos_rad = msg->des_ctrl;
 	}
-	this->des_ang_pos_rad = msg->des_ctrl;
 }
 
 void dc_motor_controller::update_feedback(){
@@ -100,7 +104,7 @@ void dc_motor_controller::update_feedback(){
 	joint_pub.publish(joint_msg);
 
 	//publish all of the feedback
-	oddbot_msgs::ServoFeedback fdbk_msg;
+	oddbot_msgs::DCMotorFeedback fdbk_msg;
 	fdbk_msg.header.stamp = ros::Time::now();
 	fdbk_msg.item.push_back("cur_pos_m");
 	fdbk_msg.value.push_back(this->cur_pos_m);
@@ -117,9 +121,9 @@ void dc_motor_controller::update_feedback(){
 	fdbk_msg.item.push_back("mode");
 	fdbk_msg.value.push_back(this->mode);
 	fdbk_msg.item.push_back("timeout");
-	fdbk_msg.value.push_back(this->timeout);
-	fdbk_msg.item.push_back("des_pos_m");
-	fdbk_msg.value.push_back(this->des_pos_m);
+	fdbk_msg.value.push_back(this->timeout_s);
+	fdbk_msg.item.push_back("des_ang_pos_m");
+	fdbk_msg.value.push_back(this->des_ang_pos_rad);
 	fdbk_msg.item.push_back("cur_vel_mps");
 	fdbk_msg.value.push_back(this->cur_vel_mps);
 	fdbk_msg.item.push_back("ticks_per_rev");

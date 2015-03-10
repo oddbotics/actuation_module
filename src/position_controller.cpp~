@@ -12,7 +12,7 @@
  * the constructor for the class motor_controller
  * it is used to initialize the ros node 
  */
-position_controller::position_controller() : dc_motor_controller(){
+position_controller::position_controller(){
 
 	//grab the parameters
 	ros::NodeHandle private_node_handle_("~");
@@ -23,7 +23,7 @@ position_controller::position_controller() : dc_motor_controller(){
 	private_node_handle_.param<double>("max_output", max_output, 100.0);
 	
 	// initialize PID controller
-	pos_PID = PID(kp, ki, kd, min_output, max_output)
+	pos_PID = PID(kp, ki, kd, min_output, max_output);
 }
 
 /**
@@ -31,7 +31,7 @@ position_controller::position_controller() : dc_motor_controller(){
  */
 position_controller::getMotorCommand(float * setMotor){
 	//calcuate output
-        setMotor* = this->pos_PID.getValue(this->cur_pos_m,this->des_pos_m,this->time_step_s); 
+        *setMotor = this->pos_PID.getValue(this->cur_ang_pos_rad,this->des_ang_pos_rad,this->time_step_s); 
 }
 
 

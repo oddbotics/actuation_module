@@ -12,25 +12,25 @@
 #include "oddbot_msgs/DCMotorCommand.h"
 #include "oddbot_msgs/DCMotorFeedback.h"
 #include "sensor_msgs/JointState.h"
-#include "beaglebone_blacklib/BlackPWM.h"
-#include "beaglebone_blacklib/BlackGPIO.h"
-#include "beaglebone_eqep/eqep.h"
 #include <string>
 #include <cmath>
 
 class dc_motor_controller 
 {
-    public: 
-	virtual void getMotorCommand(float * setMotor){*setMotor = 0.0;}	
+    public: 	
+	dc_motor_controller();
 	void update_motor(float * setMotor, int deltaEncoder_ticks);
 	void update_feedback();
 	double getTimeStepS(){return this->time_step_s;}
 	std::string getEqepPath(){return this->eqep_path;}
-	double getTimeoutTime(){return this->timeout_time_s;}
 	void setDesVelToZero(){this->des_vel_mps = 0.0;}
 	void setCurAmp(float value){this->cur_cur_amp = value;}
+	int getMode(){return this->mode;}
 	
     protected:
+	//function to call the correct control 
+	virtual void getMotorCommand(float * setMotor){*setMotor = 0.0;}
+
 	//call back function for subscriber
 	void update_controller(const oddbot_msgs::DCMotorCommand::ConstPtr& msg);
 
@@ -44,6 +44,7 @@ class dc_motor_controller
 	double min_vel_mps;	
 
 	//control variables
+	int mode;
 	double timeout_s;
 	double timeout_time_s;
 

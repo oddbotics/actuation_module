@@ -3,26 +3,27 @@
  * \controls the motor connected to a beaglebone black based on PID
  *
  * \author Chris Dunkers, CMU - cmdunkers@cmu.edu
- * \date February 14, 2015
+ * \date March 1, 2015
  */
 
-#include "actuation_module/velocity_controller.h"
-#include "actuation_module/position_controller.h"
+#include "actuation_module/beaglebone_dc_motor_controller.h"
 
 int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "motor_controller");
 
-//	dc_motor_controller ctrl;	
+	ROS_INFO("BBB DC Motor Controller Started!");
 
-	if(strcmp(argv[1],"position")){
-	    position_controller ctrl = position_controller();
-	} else if(strcmp(argv[1],"velocity"))
-	    velocity_controller ctrl = velocity_controller();   
-  	}
+	int mode = 0;		
+	dc_motor_controller * ctrl = new dc_motor_controller();
+//	if(mode == 0){ //position control
+//	    position_controller pos_ctrl = position_controller();
+//	    ctrl = &pos_ctrl; 
+//	} else if(mode == 1) {//velocity control
+//	    velocity_controller vel_ctrl = velocity_controller();
+//	    ctrl = &vel_ctrl;   
+//	}
 
-	ROS_INFO("BBB DC Motor Controller Started!");	
-	
 	// Initialize DIGITAL OUTPUT
 	BlackLib::BlackGPIO ENA(BlackLib::GPIO_39,BlackLib::output, BlackLib::SecureMode);   
 	BlackLib::BlackGPIO ENB(BlackLib::GPIO_38,BlackLib::output, BlackLib::SecureMode);
@@ -55,10 +56,10 @@ int main(int argc, char **argv)
         pwmMotor.setPeriodTime(0.001 * pow(10,12), BlackLib::picosecond); 
     
 	// Allocate an instane of eqep
-	eQEP eqep(ctrl.getEqepPath(), eQEP::eQEP_Mode_Relative);
+	eQEP eqep(ctrl->getEqepPath(), eQEP::eQEP_Mode_Relative);
 
 	// Set the unit time period on eqep
-	eqep.set_period(ctrl.getTimeStepS() * pow(10,9));
+	eqep.set_period(ctrl->getTimeStepS() * pow(10,9));
 	
 	//initialize other params
 	int deltaEncoder_ticks;
@@ -68,17 +69,12 @@ int main(int argc, char **argv)
 	{
 		// check for updates
 		ros::spinOnce();
-
-		//turn off the motor if it has not received a command after the timeout period
-		if((ros::Time::now().toSec() - ctrl.getTimeoutTime()) > 0){
-			ctrl.setDesVelToZero();
-		} 
 		
 		//get the change in encoder ticks
 		deltaEncoder_ticks = eqep.get_position();
 		
 		//get the value to set the motor at
-		ctrl.update_motor(setMotor&, deltaEncoder_ticks);
+		ctrl->update_motor(&setMotor, deltaEncoder_ticks);
 		
 		//set the Motor Speed
 		if(setMotor < 0)
@@ -99,10 +95,10 @@ int main(int argc, char **argv)
 		pwmMotor.setDutyPercent(setMotor);
 		
 		//get the current drawn
-		ctrl.setCurAmp(CS.getValue());
+//		ctrl->setCurAmp(CS.getValue());
 		
 		//Publish the update
-		ctrl.update_feedback();
+		ctrl->update_feedback();
 	}
 
 	// turn off the motor;
