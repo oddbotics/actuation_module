@@ -1,0 +1,13 @@
+<launch>
+
+  <arg name="actuation_module"/>
+  <arg name="name_space"/>
+  <arg name="actuation_file_name"/>
+  <arg name="control_file_name"/>
+  
+  <node pkg="actuation_module" type="beaglebone_dc_motor_controller" name="$(arg actuation_type)" ns="$(arg name_space)">
+    <load file="$(find actuation_module)/config/$(arg actuation_file_name)"/>
+    <load file="$(find actuation_module)/config/$(arg control_file_name)"/>
+  </node>
+
+</launch>
