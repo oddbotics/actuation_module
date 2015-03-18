@@ -26,7 +26,7 @@ dc_motor_controller::dc_motor_controller(){
 	node_name = ros::this_node::getNamespace();
 	
 	joint_pub = nh.advertise<sensor_msgs::JointState>("/joint", 1000);
-	feedback_pub = nh.advertise<oddbot_msgs::DCMotorFeedback>("/feedback", 1000);
+	feedback_pub = nh.advertise<oddbot_msgs::ActuationFeedback>("/feedback", 1000);
 	command_sub = nh.subscribe("/command", 1000, &dc_motor_controller::update_controller, this);
 	
 	//intialize state of the controller
@@ -77,11 +77,11 @@ void dc_motor_controller::update_motor(float * setMotor, int deltaEncoder_ticks)
         this->getMotorCommand(setMotor);  
 }
 
-void dc_motor_controller::update_controller(const oddbot_msgs::DCMotorCommand::ConstPtr& msg) {
+void dc_motor_controller::update_controller(const oddbot_msgs::ActuationCommand::ConstPtr& msg) {
 	//update the timeout for time the message was received
 	ros::Time timeout_time = ros::Time::now() + ros::Duration(this->timeout_s);
 	this->timeout_time_s = timeout_time.toSec();
-	if(this->mode == 1){
+	if(this->mode == 1){ //velocity control
 		if(msg->des_ctrl > this->max_vel_mps){
 			this->des_vel_mps = this->max_vel_mps;
 		} else if(msg->des_ctrl < this->min_vel_mps){ 
@@ -89,7 +89,7 @@ void dc_motor_controller::update_controller(const oddbot_msgs::DCMotorCommand::C
 		} else {
 			this->des_vel_mps = msg->des_ctrl;
 		}
-	} else if(this->mode == 0){
+	} else if(this->mode == 0){ //position control
 		this->des_ang_pos_rad = msg->des_ctrl;
 	}
 }
@@ -104,7 +104,7 @@ void dc_motor_controller::update_feedback(){
 	joint_pub.publish(joint_msg);
 
 	//publish all of the feedback
-	oddbot_msgs::DCMotorFeedback fdbk_msg;
+	oddbot_msgs::ActuationFeedback fdbk_msg;
 	fdbk_msg.header.stamp = ros::Time::now();
 	fdbk_msg.item.push_back("cur_pos_m");
 	fdbk_msg.value.push_back(this->cur_pos_m);

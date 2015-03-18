@@ -9,8 +9,8 @@
 #define DC_MOTOR_CONTROLLER_H_
 
 #include <ros/ros.h>
-#include "oddbot_msgs/DCMotorCommand.h"
-#include "oddbot_msgs/DCMotorFeedback.h"
+#include "oddbot_msgs/ActuationCommand.h"
+#include "oddbot_msgs/ActuationFeedback.h"
 #include "sensor_msgs/JointState.h"
 #include <string>
 #include <cmath>
@@ -32,7 +32,7 @@ class dc_motor_controller
 	virtual void getMotorCommand(float * setMotor){*setMotor = 0.0;}
 
 	//call back function for subscriber
-	void update_controller(const oddbot_msgs::DCMotorCommand::ConstPtr& msg);
+	void update_controller(const oddbot_msgs::ActuationCommand::ConstPtr& msg);
 
 	//the control loop time interval
 	double time_step_s;

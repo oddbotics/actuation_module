@@ -32,7 +32,7 @@ class dc_motor_controller
 	virtual void getMotorCommand(float * setMotor){*setMotor = 0.0;}
 
 	//call back function for subscriber
-	void update_controller(const oddbot_msgs::DCMotorCommand::ConstPtr& msg);
+	void update_controller(const oddbot_msgs::ActuationCommand::ConstPtr& msg);
 
 	//the control loop time interval
 	double time_step_s;
