@@ -1,0 +1,18 @@
+<launch>
+
+  <arg name="actuation_folder"/>
+  <arg name="actuation_type"/>
+  <arg name="control_type"/>
+  <arg name="name_space"/>  
+  
+  <node pkg="actuation_module" type="beaglebone_dc_motor_controller" name="$(arg actuation_type)" ns="$(arg name_space)">
+    <load file="$(find actuation_module)/config/$(arg actuation_folder)/config.yaml">
+    <load file="$(find actuation_module)/config/$(arg actuation_folder)/$(arg control_type).yaml"/>
+    <param name="mode" type="string" value="$(arg control_type)" />
+  </node>
+
+  <node pkg="actuation_module" type="beaglebone_dc_motor_controller" name="tf" ns="$(arg name_space)">
+    <load file="$(find actuation_module)/config/$(arg actuation_folder)/tf.yaml"/>
+  </node>
+
+</launch>

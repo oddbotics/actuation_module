@@ -1,0 +1,37 @@
+/*
+ * \position_controller.cpp
+ * \controls the motor based on PID
+ *
+ * \author Chris Dunkers, CMU - cmdunkers@cmu.edu
+ * \date February 14, 2015
+ */
+
+#include "actuation_module/position_controller.h"
+
+/** 
+ * the constructor for the class motor_controller
+ * it is used to initialize the ros node 
+ */
+position_controller::position_controller(){
+
+	//grab the parameters
+	ros::NodeHandle private_node_handle_("~");
+	private_node_handle_.param<double>("kp", kp, 1.0);
+	private_node_handle_.param<double>("ki", ki, 1.0);
+        private_node_handle_.param<double>("kd", kd, 1.0);
+	private_node_handle_.param<double>("min_output", min_output, -100.0);
+	private_node_handle_.param<double>("max_output", max_output, 100.0);
+	
+	// initialize PID controller
+	pos_PID = PID(kp, ki, kd, min_output, max_output);
+}
+
+/**
+ * A function to generate a value to set the motor
+ */
+void position_controller::getMotorCommand(float * setMotor){
+	//calcuate output
+        *setMotor = this->pos_PID.getValue(this->cur_ang_pos_rad,this->des_ang_pos_rad,this->time_step_s); 
+}
+
+
