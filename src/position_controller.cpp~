@@ -29,7 +29,7 @@ position_controller::position_controller(){
 /**
  * A function to generate a value to set the motor
  */
-position_controller::getMotorCommand(float * setMotor){
+void position_controller::getMotorCommand(float * setMotor){
 	//calcuate output
         *setMotor = this->pos_PID.getValue(this->cur_ang_pos_rad,this->des_ang_pos_rad,this->time_step_s); 
 }

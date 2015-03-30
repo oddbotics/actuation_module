@@ -16,5 +16,6 @@
 #include "beaglebone_blacklib/BlackPWM.h"
 #include "beaglebone_blacklib/BlackGPIO.h"
 #include "beaglebone_eqep/eqep.h"
+#include <string>
 
 #endif

@@ -40,6 +40,8 @@ add_executable(beaglebone_dc_motor_controller src/beaglebone_dc_motor_controller
 	src/velocity_controller.cpp
 )
 
+add_executable(beaglebone_dc_motor_tf src/beaglebone_dc_motor_tf.cpp)
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(actuation_module_node actuation_module_generate_messages_cpp)
@@ -50,6 +52,10 @@ target_link_libraries(beaglebone_dc_motor_controller
   actuation_module_lib
   beaglebone_blacklib
   beaglebone_eqep
+)
+
+target_link_libraries(beaglebone_dc_motor_tf
+  ${catkin_LIBRARIES}
 )
 
 set_target_properties(beaglebone_dc_motor_controller PROPERTIES COMPILE_FLAGS -std=c++11)

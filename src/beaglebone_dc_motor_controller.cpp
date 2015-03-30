@@ -14,15 +14,19 @@ int main(int argc, char **argv)
 
 	ROS_INFO("BBB DC Motor Controller Started!");
 
-	int mode = 0;		
-	dc_motor_controller * ctrl = new dc_motor_controller();
-//	if(mode == 0){ //position control
-//	    position_controller pos_ctrl = position_controller();
-//	    ctrl = &pos_ctrl; 
-//	} else if(mode == 1) {//velocity control
-//	    velocity_controller vel_ctrl = velocity_controller();
-//	    ctrl = &vel_ctrl;   
-//	}
+	//get the control launched
+	std::string mode;
+	ros::NodeHandle private_node_handle_("~");
+	private_node_handle_.param<std::string>("mode", mode, std::string("velocity"));	
+		
+	dc_motor_controller * ctrl;// = new dc_motor_controller();
+	if(mode.compare("position") == 0){ //position control
+	    position_controller pos_ctrl = position_controller();
+	    ctrl = &pos_ctrl; 
+	} else if(mode.compare("velocity") == 0) {//velocity control
+	    velocity_controller vel_ctrl = velocity_controller();
+	    ctrl = &vel_ctrl;   
+	}
 
 	// Initialize DIGITAL OUTPUT
 	BlackLib::BlackGPIO ENA(BlackLib::GPIO_39,BlackLib::output, BlackLib::SecureMode);   
