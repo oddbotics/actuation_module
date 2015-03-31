@@ -3,16 +3,16 @@
   <arg name="actuation_folder"/>
   <arg name="actuation_type"/>
   <arg name="control_type"/>
-  <arg name="name_space"/>  
+  <arg name="position"/>  
   
-  <node pkg="actuation_module" type="beaglebone_dc_motor_controller" name="$(arg actuation_type)" ns="$(arg name_space)">
-    <load file="$(find actuation_module)/config/$(arg actuation_folder)/config.yaml">
-    <load file="$(find actuation_module)/config/$(arg actuation_folder)/$(arg control_type).yaml"/>
+  <node pkg="actuation_module" type="beaglebone_dc_motor_controller" name="$(arg actuation_type)" ns="$(arg position)" output="screen">
+    <rosparam file="$(find actuation_module)/config/$(arg actuation_folder)/config.yaml" command="load" />
+    <rosparam file="$(find actuation_module)/config/$(arg actuation_folder)/$(arg control_type).yaml" command="load" />
     <param name="mode" type="string" value="$(arg control_type)" />
   </node>
 
-  <node pkg="actuation_module" type="beaglebone_dc_motor_controller" name="tf" ns="$(arg name_space)">
-    <load file="$(find actuation_module)/config/$(arg actuation_folder)/tf.yaml"/>
+  <node pkg="actuation_module" type="beaglebone_dc_motor_tf" name="tf" ns="$(arg position)" output="screen">
+    <rosparam file="$(find actuation_module)/config/$(arg actuation_folder)/tf.yaml" command="load" />
   </node>
 
 </launch>

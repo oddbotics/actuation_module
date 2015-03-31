@@ -13,6 +13,11 @@
 #include "actuation_module/dc_motor_controller.h"
 #include "actuation_module/velocity_controller.h"
 #include "actuation_module/position_controller.h"
+#include <iostream>
+#include <cmath>
+#include <chrono>
+#include <cstring>
+#include <string>
 #include "beaglebone_blacklib/BlackPWM.h"
 #include "beaglebone_blacklib/BlackGPIO.h"
 #include "beaglebone_eqep/eqep.h"

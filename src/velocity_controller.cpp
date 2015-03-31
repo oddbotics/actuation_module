@@ -12,7 +12,7 @@
  * the constructor for the class motor_controller
  * it is used to initialize the ros node 
  */
-velocity_controller::velocity_controller(){
+velocity_controller::velocity_controller() : dc_motor_controller(){
 
 	//grab the parameters
 	ros::NodeHandle private_node_handle_("~");
@@ -24,6 +24,7 @@ velocity_controller::velocity_controller(){
 	
 	// initialize PID controller
 	vel_PID = PID(kp, ki, kd, min_output, max_output);  
+	ROS_INFO("VELOCITY CONTROLLER INIT");
 }
 
 /**
@@ -34,9 +35,17 @@ void velocity_controller::getMotorCommand(float * setMotor){
 	//turn off the motor if it has not received a command after the timeout period
 	if((ros::Time::now().toSec() - this->timeout_time_s) > 0){
 		this->setDesVelToZero();
-	} 
-
-        *setMotor = this->vel_PID.getValue(this->cur_vel_mps,this->des_vel_mps,this->time_step_s); 
+	} else {
+		if(this->des_vel_mps > this->max_vel_mps){
+                	this->des_vel_mps = this->max_vel_mps;
+        	} else if(this->des_vel_mps < this->min_vel_mps){ 
+                	this->des_vel_mps = this->min_vel_mps;
+        	}
+	}
+//	ROS_INFO("DES VEL: %f ::: CUR VEL %f ",this->des_vel_mps, this->cur_vel_mps);
+	this->des_ang_pos_rad = 0.0;
+        *setMotor = this->vel_PID.getValue(this->cur_vel_mps,this->des_vel_mps,this->time_step_s);
+//	ROS_INFO("SET: %f", *setMotor); 
 }
 
 

@@ -17,25 +17,34 @@ int main(int argc, char **argv)
 	//get the control launched
 	std::string mode;
 	ros::NodeHandle private_node_handle_("~");
-	private_node_handle_.param<std::string>("mode", mode, std::string("velocity"));	
-		
-	dc_motor_controller * ctrl;// = new dc_motor_controller();
+	private_node_handle_.param<std::string>("mode", mode, "velocity");	
+	ROS_INFO("PARAM RECEIVED");		
+	dc_motor_controller * ctrl;
 	if(mode.compare("position") == 0){ //position control
-	    position_controller pos_ctrl = position_controller();
-	    ctrl = &pos_ctrl; 
+	    position_controller * pos_ctrl = new position_controller();
+            ctrl = pos_ctrl; 
 	} else if(mode.compare("velocity") == 0) {//velocity control
-	    velocity_controller vel_ctrl = velocity_controller();
-	    ctrl = &vel_ctrl;   
-	}
-
+	    velocity_controller * vel_ctrl = new velocity_controller();
+	    ctrl = vel_ctrl;   
+	} else {
+	    ROS_ERROR("Actuation module controller type not specified");
+            return 0;
+        }
+//	ros::NodeHandle nh;
+//	ros::Subscriber command_sub = nh.subscribe("/command", 1000, &dc_motor_controller::update_controller, ctrl);
+	ROS_INFO("EQEP_PATH: %s",ctrl->getEqepPath().c_str());
+	ROS_INFO("CONTROLLER_INITIALIZED");
+	ROS_INFO("EQEP_PATH: %s",ctrl->getEqepPath().c_str());
+	ROS_INFO("TIMESTEP: %f", ctrl->getTimeStepS());
 	// Initialize DIGITAL OUTPUT
-	BlackLib::BlackGPIO ENA(BlackLib::GPIO_39,BlackLib::output, BlackLib::SecureMode);   
-	BlackLib::BlackGPIO ENB(BlackLib::GPIO_38,BlackLib::output, BlackLib::SecureMode);
-	BlackLib::BlackGPIO INA(BlackLib::GPIO_35,BlackLib::output, BlackLib::SecureMode);
-	BlackLib::BlackGPIO INB(BlackLib::GPIO_34,BlackLib::output, BlackLib::SecureMode);
+	BlackLib::BlackGPIO ENA(BlackLib::GPIO_11,BlackLib::output, BlackLib::SecureMode);   
+	BlackLib::BlackGPIO ENB(BlackLib::GPIO_10,BlackLib::output, BlackLib::SecureMode);
+	BlackLib::BlackGPIO INA(BlackLib::GPIO_81,BlackLib::output, BlackLib::SecureMode);
+	BlackLib::BlackGPIO INB(BlackLib::GPIO_9,BlackLib::output, BlackLib::SecureMode);
+	ROS_INFO("EQEP_PATH: %s",ctrl->getEqepPath().c_str());
 
 	// Initialize ANALOG INPUT
-	BlackLib::BlackGPIO CS(BlackLib::GPIO_51,BlackLib::input, BlackLib::SecureMode);
+//	BlackLib::BlackGPIO CS(BlackLib::GPIO_51,BlackLib::input, BlackLib::SecureMode);
 	
 	// INA - Motor direction input A (CW)
 	// INB - Motor direction input B (CCW)
@@ -53,22 +62,27 @@ int main(int argc, char **argv)
 	ENB.setValue(BlackLib::high);          // enable half bridge B
 	INA.setValue(BlackLib::low);          // Turn on to set into brake 
 	INB.setValue(BlackLib::low);          // turn on to set to Brake 
-	
+	ROS_INFO("GPIO INITIALIZED");	
+	ROS_INFO("EQEP_PATH: %s",ctrl->getEqepPath().c_str());
+
 	//Initialize PWM
 	BlackLib::BlackPWM pwmMotor(BlackLib::EHRPWM2A);
 	pwmMotor.setDutyPercent(0.0); 
         pwmMotor.setPeriodTime(0.001 * pow(10,12), BlackLib::picosecond); 
-    
+	pwmMotor.setPolarity(BlackLib::reverse);
+        ROS_INFO("PWM INITIALIZED");
+	ROS_INFO("EQEP_PATH: %s",ctrl->getEqepPath().c_str());
 	// Allocate an instane of eqep
 	eQEP eqep(ctrl->getEqepPath(), eQEP::eQEP_Mode_Relative);
-
+	ROS_INFO("EQEP SET MODE");
 	// Set the unit time period on eqep
 	eqep.set_period(ctrl->getTimeStepS() * pow(10,9));
-	
+	ROS_INFO("EQEP SET PERIOD");
 	//initialize other params
 	int deltaEncoder_ticks;
 	float setMotor;
-
+	ROS_INFO("EQEP INITIALIZED");
+	ROS_INFO("EVERYTHING INITIALIZED!");
 	while (ros::ok())
 	{
 		// check for updates
@@ -90,7 +104,8 @@ int main(int argc, char **argv)
 		{
 			INA.setValue(BlackLib::low);
 			INB.setValue(BlackLib::high);          
-		} else if(setMotor == 0){
+		} else if(setMotor >= -0.001 || setMotor <= 0.001){
+			setMotor = 0;
 			INA.setValue(BlackLib::low);
 			INB.setValue(BlackLib::low);          
 		}
@@ -104,11 +119,14 @@ int main(int argc, char **argv)
 		//Publish the update
 		ctrl->update_feedback();
 	}
-
+	
 	// turn off the motor;
 	INA.setValue(BlackLib::low);
 	INB.setValue(BlackLib::low); 
 	pwmMotor.setDutyPercent(0.0);
+
+	//delete the controller
+	delete ctrl;
 
 	return 0;
 }
