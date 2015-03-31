@@ -26,10 +26,11 @@ class dc_motor_controller
 	void setDesVelToZero(){this->des_vel_mps = 0.0;}
 	void setCurAmp(float value){this->cur_cur_amp = value;}
 	int getMode(){return this->mode;}
+	//void update_controller(const oddbot_msgs::ActuationCommand::ConstPtr& msg);
 	
     protected:
 	//function to call the correct control 
-	virtual void getMotorCommand(float * setMotor){*setMotor = 0.0;}
+	virtual void getMotorCommand(float * setMotor){ROS_INFO("SETTING MOTOR TO ZERO"); *setMotor = 0.0;}
 
 	//call back function for subscriber
 	void update_controller(const oddbot_msgs::ActuationCommand::ConstPtr& msg);
