@@ -4,6 +4,10 @@
   <arg name="actuation_type"/>
   <arg name="control_type"/>
   <arg name="position"/>  
+  <arg name="connector_num/>
+
+  <param ns="$(arg position)" name="type" type="string" value="$(arg actuation_type)" />
+  <param ns="$(arg position)" name="location" type="int" value="$(arg connector_num)" />  
   
   <node pkg="actuation_module" type="beaglebone_dc_motor_controller" name="$(arg actuation_type)" ns="$(arg position)" output="screen">
     <rosparam file="$(find actuation_module)/config/$(arg actuation_folder)/config.yaml" command="load" />
