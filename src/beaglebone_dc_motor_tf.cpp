@@ -14,6 +14,7 @@ int main(int argc, char** argv){
   int location;
   std::string type;
   std::string connector = ros::this_node::getNamespace();
+  connector.erase(connector.begin());
 
   //read in a private node handle to determine frame
   ros::NodeHandle private_node_handle_("~");
@@ -30,7 +31,7 @@ int main(int argc, char** argv){
   tf::Quaternion quat;
   quat.setRPY(roll, pitch, yaw);
   
-  std::string frame(type + std::string("_" + location));//std::to_string(location)));
+  std::string frame(type + std::string("_" + std::to_string(location)));//std::to_string(location)));
 
   ros::Rate rate(10.0);
   while (node.ok()){

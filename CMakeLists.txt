@@ -60,6 +60,7 @@ target_link_libraries(beaglebone_dc_motor_tf
 )
 
 set_target_properties(beaglebone_dc_motor_controller PROPERTIES COMPILE_FLAGS -std=c++11)
+set_target_properties(beaglebone_dc_motor_tf PROPERTIES COMPILE_FLAGS -std=c++11)
 #############
 ## Install ##
 #############
