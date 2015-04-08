@@ -1,8 +1,18 @@
 #!/bin/bash
 source /opt/ros/indigo/setup.bash
 source /home/ubuntu/catkin_ws/devel/setup.bash
-export ROS_MASTER_URI=http://odroid:11311
+
+master=$(ip addr show eth0 | grep -o '10.0.[[:digit:]].[[:digit:]]' | head -1 |
+awk '{
+        split($1, a, ".")
+        subnet = a[3]
+        print "10.0." subnet ".1:11311"
+}')
+
+
+export ROS_MASTER_URI=http://$master
 export ROS_HOSTNAME=motor-2
+export ROS_IP=$(ip addr show eth0 | grep -o '10.0.[[:digit:]].[[:digit:]]' | head -1)
 
 sleep 2;
 

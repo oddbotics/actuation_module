@@ -33,11 +33,11 @@ int main(int argc, char** argv){
   
   std::string frame(type + std::string("_" + std::to_string(location)));//std::to_string(location)));
 
-  ros::Rate rate(10.0);
+  ros::Rate rate(30.0);
   while (node.ok()){
     transform.setOrigin( tf::Vector3(x, y, z) );
     transform.setRotation( quat );
-    br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), connector, std::string(frame + "/wheel")));
+    br.sendTransform(tf::StampedTransform(transform, ros::Time(0), connector.substr(1), std::string(frame + "/wheel")));
     rate.sleep();
   }
   return 0;
